@@ -8,7 +8,7 @@ A simplified doom-style raycasting game inspired by PyDoom (https://github.com/P
 - **DOWN**: Move backward  
 - **A**: Turn left
 - **C**: Turn right
-- **B**: Shoot
+- **B**: Shoot (single shot with cooldown)
 - **HOME**: Return to menu
 
 ## Features
@@ -27,7 +27,7 @@ This implementation uses a simplified raycasting algorithm suitable for the badg
 
 - 160x120 resolution rendering
 - 160 rays cast per frame (full screen width)
-- Optimized stepping algorithm for fast rendering
+- Improved stepping algorithm with larger steps (0.05 units) for better wall detection accuracy
 - Grid-based collision detection
 - Perspective-correct wall and enemy rendering
 - Z-sorted sprite rendering for proper depth
@@ -45,4 +45,8 @@ You can modify the `GAME_MAP` in `__init__.py` to create your own levels!
 Enemies are defined in the `enemies` list as `[x, y, alive]`. You can:
 - Add more enemies at different positions
 - Modify enemy positions
-- Adjust the enemy radius for hit detection (currently 0.3 units)
+
+### Gameplay mechanics:
+- Enemies are detected during raycasting if the ray passes within 0.3 units of their position
+- Shooting uses raycasting to detect if an enemy is in your crosshairs
+- Successfully hitting an enemy requires being within 5.0 units range
