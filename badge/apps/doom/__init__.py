@@ -86,6 +86,7 @@ def cast_ray(angle):
     closest_enemy = None
     closest_enemy_dist = MAX_DEPTH
     enemy_radius = 0.3
+    enemy_radius_sq = enemy_radius * enemy_radius
     
     for i, enemy in enumerate(enemies):
         if enemy[2]:  # If alive
@@ -106,15 +107,15 @@ def cast_ray(angle):
             closest_x = player_x + ray_x * dot
             closest_y = player_y + ray_y * dot
             
-            # Distance from enemy center to closest point on ray
-            dist_to_ray = math.sqrt((ex - closest_x) ** 2 + (ey - closest_y) ** 2)
+            # Squared distance from enemy center to closest point on ray (avoid sqrt)
+            dist_to_ray_sq = (ex - closest_x) ** 2 + (ey - closest_y) ** 2
             
             # Check if ray passes through enemy's radius
-            if dist_to_ray < enemy_radius:
-                enemy_dist = math.sqrt(dx * dx + dy * dy)
-                if enemy_dist < closest_enemy_dist:
+            if dist_to_ray_sq < enemy_radius_sq:
+                # Use dot as the distance along the ray (already represents projected distance)
+                if dot < closest_enemy_dist:
                     closest_enemy = i
-                    closest_enemy_dist = enemy_dist
+                    closest_enemy_dist = dot
     
     # Step along ray to find walls
     for step in range(max_steps):
