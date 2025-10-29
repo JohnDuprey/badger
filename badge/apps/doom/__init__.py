@@ -99,7 +99,7 @@ def cast_ray(angle):
             # Project enemy position onto ray direction
             dot = dx * ray_x + dy * ray_y
             
-            # If enemy is behind the player, skip it
+            # If enemy is behind the player (in opposite direction of ray), skip it
             if dot < 0:
                 continue
             
@@ -112,10 +112,11 @@ def cast_ray(angle):
             
             # Check if ray passes through enemy's radius
             if dist_to_ray_sq < enemy_radius_sq:
-                # Use dot as the distance along the ray (already represents projected distance)
-                if dot < closest_enemy_dist:
+                # Calculate actual Euclidean distance for correct enemy ordering
+                enemy_dist_sq = dx * dx + dy * dy
+                if enemy_dist_sq < closest_enemy_dist * closest_enemy_dist:
                     closest_enemy = i
-                    closest_enemy_dist = dot
+                    closest_enemy_dist = math.sqrt(enemy_dist_sq)
     
     # Step along ray to find walls
     for step in range(max_steps):
