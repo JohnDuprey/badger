@@ -82,10 +82,45 @@ def cast_ray(angle):
     step_size = 0.05
     max_steps = int(MAX_DEPTH / step_size)
     
+    # Pre-calculate enemy intersections using ray-circle intersection
     closest_enemy = None
     closest_enemy_dist = MAX_DEPTH
+    closest_enemy_dist_sq = MAX_DEPTH * MAX_DEPTH
+    enemy_radius = 0.3
+    enemy_radius_sq = enemy_radius * enemy_radius
     
-    # Step along ray
+    for i, enemy in enumerate(enemies):
+        if enemy[2]:  # If alive
+            ex, ey = enemy[0], enemy[1]
+            
+            # Vector from player to enemy
+            dx = ex - player_x
+            dy = ey - player_y
+            
+            # Project enemy position onto ray direction
+            dot = dx * ray_x + dy * ray_y
+            
+            # If enemy is behind the player (in opposite direction of ray), skip it
+            if dot < 0:
+                continue
+            
+            # Find closest point on ray to enemy center
+            closest_x = player_x + ray_x * dot
+            closest_y = player_y + ray_y * dot
+            
+            # Squared distance from enemy center to closest point on ray (avoid sqrt)
+            dist_to_ray_sq = (ex - closest_x) ** 2 + (ey - closest_y) ** 2
+            
+            # Check if ray passes through enemy's radius
+            if dist_to_ray_sq < enemy_radius_sq:
+                # Calculate actual Euclidean distance for correct enemy ordering
+                enemy_dist_sq = dx * dx + dy * dy
+                if enemy_dist_sq < closest_enemy_dist_sq:
+                    closest_enemy = i
+                    closest_enemy_dist_sq = enemy_dist_sq
+                    closest_enemy_dist = math.sqrt(enemy_dist_sq)
+    
+    # Step along ray to find walls
     for step in range(max_steps):
         x += ray_x * step_size
         y += ray_y * step_size
@@ -96,18 +131,6 @@ def cast_ray(angle):
         
         if map_x < 0 or map_x >= MAP_WIDTH or map_y < 0 or map_y >= MAP_HEIGHT:
             return MAX_DEPTH, False, closest_enemy, closest_enemy_dist
-        
-        # Check for enemies before walls
-        if closest_enemy is None:
-            for i, enemy in enumerate(enemies):
-                if enemy[2]:  # If alive
-                    ex, ey = enemy[0], enemy[1]
-                    dist_to_enemy = math.sqrt((x - ex) ** 2 + (y - ey) ** 2)
-                    if dist_to_enemy < 0.3:  # Enemy radius
-                        enemy_dist = math.sqrt((ex - player_x) ** 2 + (ey - player_y) ** 2)
-                        if enemy_dist < closest_enemy_dist:
-                            closest_enemy = i
-                            closest_enemy_dist = enemy_dist
         
         # Check if ray hit a wall
         if GAME_MAP[map_y][map_x] == 1:

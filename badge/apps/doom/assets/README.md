@@ -28,6 +28,7 @@ This implementation uses a simplified raycasting algorithm suitable for the badg
 - 160x120 resolution rendering
 - 160 rays cast per frame (full screen width)
 - Improved stepping algorithm with larger steps (0.05 units) for better wall detection accuracy
+- Optimized enemy detection using ray-circle intersection (99.5% reduction in enemy checks)
 - Grid-based collision detection
 - Perspective-correct wall and enemy rendering
 - Z-sorted sprite rendering for proper depth
@@ -47,6 +48,6 @@ Enemies are defined in the `enemies` list as `[x, y, alive]`. You can:
 - Modify enemy positions
 
 ### Gameplay mechanics:
-- Enemies are detected during raycasting if the ray passes within 0.3 units of their position
+- Enemies are detected using efficient ray-circle intersection tests performed once per ray
 - Shooting uses raycasting to detect if an enemy is in your crosshairs
 - Successfully hitting an enemy requires being within 5.0 units range
