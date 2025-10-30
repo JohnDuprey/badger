@@ -85,6 +85,7 @@ def cast_ray(angle):
     # Pre-calculate enemy intersections using ray-circle intersection
     closest_enemy = None
     closest_enemy_dist = MAX_DEPTH
+    closest_enemy_dist_sq = MAX_DEPTH * MAX_DEPTH
     enemy_radius = 0.3
     enemy_radius_sq = enemy_radius * enemy_radius
     
@@ -114,8 +115,9 @@ def cast_ray(angle):
             if dist_to_ray_sq < enemy_radius_sq:
                 # Calculate actual Euclidean distance for correct enemy ordering
                 enemy_dist_sq = dx * dx + dy * dy
-                if enemy_dist_sq < closest_enemy_dist * closest_enemy_dist:
+                if enemy_dist_sq < closest_enemy_dist_sq:
                     closest_enemy = i
+                    closest_enemy_dist_sq = enemy_dist_sq
                     closest_enemy_dist = math.sqrt(enemy_dist_sq)
     
     # Step along ray to find walls
