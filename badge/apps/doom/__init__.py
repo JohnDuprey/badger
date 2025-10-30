@@ -34,6 +34,9 @@ player_angle = 0.0
 MOVE_SPEED = 0.08
 ROTATE_SPEED = 0.12
 
+# Weapon settings
+MUZZLE_FLASH_DURATION = 8
+
 # Enemy data - [x, y, alive]
 enemies = [
     [7.5, 2.5, True],
@@ -232,7 +235,7 @@ def render_3d_view():
     
     # Muzzle flash effect - enhanced with multiple layers
     if muzzle_flash > 0:
-        flash_brightness = int(255 * (muzzle_flash / 8))
+        flash_brightness = int(255 * (muzzle_flash / MUZZLE_FLASH_DURATION))
         flash_center_x = gun_x + 15
         flash_center_y = gun_y
         
@@ -310,7 +313,7 @@ def shoot():
     
     # Set cooldown and muzzle flash
     weapon_cooldown = 10
-    muzzle_flash = 8
+    muzzle_flash = MUZZLE_FLASH_DURATION
     
     # Cast ray in player's direction to check for enemy hits
     center_angle = player_angle
