@@ -31,8 +31,8 @@ player_y = 2.5
 player_angle = 0.0
 
 # Movement speed
-MOVE_SPEED = 0.03
-ROTATE_SPEED = 0.05
+MOVE_SPEED = 0.08
+ROTATE_SPEED = 0.12
 
 # Enemy data - [x, y, alive]
 enemies = [
@@ -230,12 +230,32 @@ def render_3d_view():
     screen.brush = brushes.color(60, 60, 60)
     screen.draw(shapes.rectangle(gun_x + 12, gun_y, 6, 12))
     
-    # Muzzle flash effect
+    # Muzzle flash effect - enhanced with multiple layers
     if muzzle_flash > 0:
-        flash_brightness = int(255 * (muzzle_flash / 5))
-        screen.brush = brushes.color(flash_brightness, flash_brightness, 0)
-        screen.draw(shapes.circle(gun_x + 15, gun_y, 5))
-        screen.draw(shapes.rectangle(gun_x + 13, gun_y - 5, 4, 5))
+        flash_brightness = int(255 * (muzzle_flash / 8))
+        flash_center_x = gun_x + 15
+        flash_center_y = gun_y
+        
+        # Outer flash glow (orange/yellow)
+        screen.brush = brushes.color(flash_brightness, int(flash_brightness * 0.6), 0)
+        screen.draw(shapes.circle(flash_center_x, flash_center_y, 8))
+        
+        # Middle flash layer (bright yellow)
+        screen.brush = brushes.color(flash_brightness, flash_brightness, int(flash_brightness * 0.3))
+        screen.draw(shapes.circle(flash_center_x, flash_center_y, 5))
+        
+        # Inner core (white hot center)
+        screen.brush = brushes.color(flash_brightness, flash_brightness, flash_brightness)
+        screen.draw(shapes.circle(flash_center_x, flash_center_y, 3))
+        
+        # Flash rays extending from barrel
+        if muzzle_flash > 4:
+            screen.brush = brushes.color(flash_brightness, int(flash_brightness * 0.8), 0)
+            # Top ray
+            screen.draw(shapes.rectangle(flash_center_x - 1, flash_center_y - 10, 2, 10))
+            # Side rays
+            screen.draw(shapes.rectangle(flash_center_x - 8, flash_center_y - 1, 6, 2))
+            screen.draw(shapes.rectangle(flash_center_x + 2, flash_center_y - 1, 6, 2))
 
 
 def render_minimap():
@@ -290,7 +310,7 @@ def shoot():
     
     # Set cooldown and muzzle flash
     weapon_cooldown = 10
-    muzzle_flash = 5
+    muzzle_flash = 8
     
     # Cast ray in player's direction to check for enemy hits
     center_angle = player_angle
